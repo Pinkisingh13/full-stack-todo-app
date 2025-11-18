@@ -152,9 +152,7 @@ router.get("/ai-summary", async (req, res) => {
 
     let aiReply = completion.choices[0].message.content;
 
-
-
-    res.status(200).statusMessage("ai successfully summarized the todos.").json({
+    res.status(200).json({
       summary: aiReply,
     })
 
