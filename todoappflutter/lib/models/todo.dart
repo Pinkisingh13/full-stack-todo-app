@@ -27,13 +27,21 @@ class Todo {
   }
 
   factory Todo.fromJson(Map<String, dynamic> json) {
-    return Todo(
-      id: json['_id'] ?? '',
-      title: json['todotitle'] ?? '',
-      description: json['description'] ?? '',
-      isCompleted: json['isCompleted'] ?? false,
-      createdAt: DateTime.parse(json['createdAt']),
-      priority: json['priority'] ?? 'medium',
-    );
+    try {
+      return Todo(
+        id: json['_id']?.toString() ?? '',
+        title: json['todotitle']?.toString() ?? '',
+        description: json['description']?.toString() ?? '',
+        isCompleted: json['isCompleted'] == true,
+        createdAt: json['createdAt'] != null
+            ? DateTime.parse(json['createdAt'].toString())
+            : DateTime.now(),
+        priority: json['priority']?.toString() ?? 'medium',
+      );
+    } catch (e) {
+      print('Error parsing Todo from JSON: $e');
+      print('JSON data: $json');
+      rethrow;
+    }
   }
 }

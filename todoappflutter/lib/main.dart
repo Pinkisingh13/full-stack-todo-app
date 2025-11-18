@@ -1,4 +1,3 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/todo_provider.dart';
@@ -6,17 +5,7 @@ import 'widgets/todo_form.dart';
 import 'widgets/todo_item.dart';
 import 'widgets/summary_dialog.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // Load .env file
-  try {
-await dotenv.load(fileName: ".env");
-// await TodoService.getTodos();
-  } catch (e) {
-    print("Failed to load .env file: ${e.toString()}");
-  }
-
+void main() {
   runApp(const MyApp());
 }
 

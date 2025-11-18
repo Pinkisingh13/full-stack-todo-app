@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:todoappflutter/models/todo.dart';
+import 'package:todoappflutter/config/app_config.dart';
 import 'package:http/http.dart' as http;
 
 class TodoService {
-  static String baseUrl = dotenv.env['BASE_URL'].toString();
+  static String baseUrl = AppConfig.baseUrl;
 
   //! GET ALL TODOS
   static Future<List<Todo>> getTodos() async {
@@ -19,16 +19,31 @@ class TodoService {
       print('📥 Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
-        List data = jsonDecode(response.body);
+        final dynamic decodedData = jsonDecode(response.body);
 
-        return data.map((t) => Todo.fromJson(t)).toList();
+        if (decodedData is! List) {
+          print('❌ Expected a List but got: ${decodedData.runtimeType}');
+          throw Exception("API returned unexpected data format");
+        }
+
+        List data = decodedData;
+        print('📊 Parsing ${data.length} todos...');
+
+        return data.map((t) {
+          if (t is! Map<String, dynamic>) {
+            print('❌ Todo item is not a Map: $t');
+            throw Exception("Invalid todo format");
+          }
+          return Todo.fromJson(t as Map<String, dynamic>);
+        }).toList();
       } else {
         throw Exception(
           "Failed to load todos - Status: ${response.statusCode}, Body: ${response.body}",
         );
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       print('❌ GET Todos Error: $e');
+      print('📍 Stack trace: $stackTrace');
       throw Exception("Failed to get all todos: $e");
     }
   }
