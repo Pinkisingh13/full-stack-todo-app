@@ -119,35 +119,35 @@ router.get("/ai-summary", async (req, res) => {
     }
 
     let todointext = myTodos.map((t, index) => {
-      return `${index + 1}. ${t.todotitle} | Priority: ${t.priority} | Descroption: ${t.description}  | Completed: ${t.isCompleted}`;
+      return `${index + 1}. ${t.todotitle} | Priority: ${t.priority} | Description: ${t.description} | Completed: ${t.isCompleted}`;
     }).join("\n");
 
-    let prompt = `Summarize these todos: ${todointext}, 
- Give me:
+    let prompt = `Summarize these todos: ${todointext},
+Give me:
 - Total tasks
 - Completed tasks
 - Not completed tasks
 - Count by priority (high, medium, low)
-- A short 2 line suggestion
- `;
+- A short 2 line suggestion`;
 
+    console.log('Calling Groq API...');
+    console.log('API Key exists:', !!process.env.GROQ_API);
 
     const completion = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile",
       messages: [
         {
+          role: "system",
+          content: "You are a helpful todo assistant."
+        },
+        {
           role: 'user',
           content: prompt,
         },
-
-        {
-          role: "system",
-          content: "You are a helpful todo assistant."
-        },]
-
-
+      ]
     });
 
+    console.log('Groq API response received');
     console.log(completion.choices[0].message.content);
 
     let aiReply = completion.choices[0].message.content;
@@ -157,8 +157,14 @@ router.get("/ai-summary", async (req, res) => {
     })
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: error.message });
+    console.error('AI Summary Error:', error);
+    console.error('Error details:', error.response?.data || error.message);
+
+    // Return a more helpful error message
+    res.status(500).json({
+      message: "Failed to generate AI summary. Please check your Groq API key and try again.",
+      error: error.message
+    });
   }
 
 

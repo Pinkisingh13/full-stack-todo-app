@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:todoappflutter/models/todo.dart';
-import 'package:todoappflutter/config/app_config.dart';
+
 import 'package:http/http.dart' as http;
 
 class TodoService {
-  static String baseUrl = AppConfig.baseUrl;
+  static String baseUrl = "https://full-stack-todo-app-lzyj.onrender.com/api/todos/";
 
   //! GET ALL TODOS
   static Future<List<Todo>> getTodos() async {
