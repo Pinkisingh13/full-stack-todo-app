@@ -4,15 +4,16 @@ import '../service/todo_service.dart';
 
 class TodoProvider extends ChangeNotifier {
   List<Todo> _todos = [];
-  String _currentFilter = 'all';
   bool _isLoading = false;
   String? _errorMessage;
 
+  String? _summarizeText;
+
   // Getters
   List<Todo> get todos => _todos;
-  String get currentFilter => _currentFilter;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
+  String? get todosummarize => _summarizeText;
 
   int get totalTodos => _todos.length;
   int get completedTodos => _todos.where((todo) => todo.isCompleted).length;
@@ -22,30 +23,6 @@ class TodoProvider extends ChangeNotifier {
       _todos.where((todo) => todo.isCompleted).toList();
   List<Todo> get pendingTodosList =>
       _todos.where((todo) => !todo.isCompleted).toList();
-
-  // Get filtered todos based on current filter
-  List<Todo> get filteredTodos {
-    List<Todo> filteredList = List.from(_todos);
-
-    switch (_currentFilter) {
-      case 'createdAt_asc':
-        filteredList.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-        break;
-      case 'createdAt_desc':
-        filteredList.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-        break;
-      case 'priority':
-        filteredList.sort((a, b) => a.priority.compareTo(b.priority));
-        break;
-      case 'completed':
-        filteredList.sort((a, b) => b.isCompleted ? 1 : -1);
-        break;
-      default:
-        break;
-    }
-
-    return filteredList;
-  }
 
   // Fetch all todos from API
   Future<void> fetchTodos() async {
@@ -76,9 +53,9 @@ class TodoProvider extends ChangeNotifier {
 
     try {
       final body = {
-        'title': title,
+        'todotitle': title,
         'description': description,
-        'priority': priority,
+        'priority': priority.toLowerCase(),
         'isCompleted': false,
       };
 
@@ -109,9 +86,9 @@ class TodoProvider extends ChangeNotifier {
 
       final body = {
         'id': id,
-        'title': title,
+        'todotitle': title,
         'description': description,
-        'priority': priority,
+        'priority': priority.toLowerCase(),
         'isCompleted': todo.isCompleted,
       };
 
@@ -160,9 +137,9 @@ class TodoProvider extends ChangeNotifier {
 
       final body = {
         'id': id,
-        'title': todo.title,
+        'todotitle': todo.title,
         'description': todo.description,
-        'priority': todo.priority,
+        'priority': todo.priority.toLowerCase(),
         'isCompleted': todo.isCompleted,
       };
 
@@ -176,9 +153,32 @@ class TodoProvider extends ChangeNotifier {
     }
   }
 
-  // Set filter
-  void setFilter(String filter) {
-    _currentFilter = filter;
+Future<void> summarize() async {
+  try {
+    print("Summarize start");
+
+    _isLoading = true;
     notifyListeners();
+
+    final String s = await TodoService.summarizeTodos();
+
+    print("Summarize Todo Text: $s");
+
+    if (s.isNotEmpty) {
+      _summarizeText = s;
+    } else {
+      print("Summarize todo text is empty");
+    }
+
+    _isLoading = false;
+    notifyListeners();
+
+  } catch (e) {
+    _isLoading = false;
+    _errorMessage = e.toString();
+    notifyListeners();
+
+    print("❌ Summarize Error: $e");
   }
+}
 }

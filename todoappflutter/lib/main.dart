@@ -1,11 +1,9 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todoappflutter/service/todo_service.dart';
 import 'providers/todo_provider.dart';
 import 'widgets/todo_form.dart';
 import 'widgets/todo_item.dart';
-import 'widgets/filter_chips.dart';
 import 'widgets/summary_dialog.dart';
 
 void main() async {
@@ -122,13 +120,33 @@ class _TodoHomePageState extends State<TodoHomePage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'My Todos',
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'My Todos',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              Consumer<TodoProvider>(
+                builder: (context, todoProvider, child) {
+                  return IconButton(
+                    onPressed: todoProvider.isLoading
+                        ? null
+                        : () => todoProvider.fetchTodos(),
+                    icon: Icon(
+                      Icons.refresh,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                    tooltip: 'Refresh todos',
+                  );
+                },
+              ),
+            ],
           ),
           const SizedBox(height: 8),
           Consumer<TodoProvider>(
@@ -144,14 +162,14 @@ class _TodoHomePageState extends State<TodoHomePage>
           ),
           const SizedBox(height: 20),
           _buildSummaryButton(),
-          const SizedBox(height: 20),
-          const FilterChips(),
         ],
       ),
     );
   }
 
   Widget _buildSummaryButton() {
+
+  
     return Container(
       width: double.infinity,
       height: 55,
@@ -168,24 +186,36 @@ class _TodoHomePageState extends State<TodoHomePage>
           ),
         ],
       ),
-      child: ElevatedButton.icon(
-        onPressed: () => SummaryDialog.show(context),
-        icon: const Icon(Icons.analytics_outlined, size: 24),
-        label: const Text(
-          'View Summary',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-        ),
+      child: Consumer<TodoProvider>(
+        builder: (context, todoProvider, child) {
+          return ElevatedButton.icon(
+            onPressed: todoProvider.isLoading
+                ? null
+                : () async {
+                    await todoProvider.summarize();
+                    if (context.mounted) {
+                      SummaryDialog.show(context);
+                    }
+                  },
+            icon: const Icon(Icons.analytics_outlined, size: 24),
+            label: const Text(
+              'View Summary',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              foregroundColor: Colors.white,
+              shadowColor: Colors.transparent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -269,9 +299,9 @@ class _TodoHomePageState extends State<TodoHomePage>
           // Show todos list
           return ListView.builder(
             padding: const EdgeInsets.all(20),
-            itemCount: todoProvider.filteredTodos.length,
+            itemCount: todoProvider.todos.length,
             itemBuilder: (context, index) {
-              final todo = todoProvider.filteredTodos[index];
+              final todo = todoProvider.todos[index];
               return TodoItem(todo: todo);
             },
           );
@@ -334,6 +364,7 @@ class _TodoHomePageState extends State<TodoHomePage>
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
+            color: Colors.white
           ),
         ),
         elevation: 8,

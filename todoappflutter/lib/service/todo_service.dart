@@ -23,7 +23,9 @@ class TodoService {
 
         return data.map((t) => Todo.fromJson(t)).toList();
       } else {
-        throw Exception("Failed to load todos - Status: ${response.statusCode}, Body: ${response.body}");
+        throw Exception(
+          "Failed to load todos - Status: ${response.statusCode}, Body: ${response.body}",
+        );
       }
     } catch (e) {
       print('❌ GET Todos Error: $e');
@@ -46,10 +48,12 @@ class TodoService {
       print('📥 Response Status: ${response.statusCode}');
       print('📥 Response Body: ${response.body}');
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         return Todo.fromJson(jsonDecode(response.body));
       } else {
-        throw Exception("Failed to create todo - Status: ${response.statusCode}, Body: ${response.body}");
+        throw Exception(
+          "Failed to create todo - Status: ${response.statusCode}, Body: ${response.body}",
+        );
       }
     } catch (e) {
       print('❌ Create Todo Error: $e');
@@ -59,7 +63,7 @@ class TodoService {
 
   static Future<Todo> updateTodos(Map<String, dynamic> body, String id) async {
     try {
-      final url = Uri.parse("${baseUrl}update-todo");
+      final url = Uri.parse("${baseUrl}update-todo/$id");
       print('📡 PUT Request to: $url');
       print('📤 Payload: ${jsonEncode(body)}');
 
@@ -72,10 +76,12 @@ class TodoService {
       print('📥 Response Status: ${response.statusCode}');
       print('📥 Response Body: ${response.body}');
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         return Todo.fromJson(jsonDecode(response.body));
       } else {
-        throw Exception("Failed to update todo - Status: ${response.statusCode}, Body: ${response.body}");
+        throw Exception(
+          "Failed to update todo - Status: ${response.statusCode}, Body: ${response.body}",
+        );
       }
     } catch (e) {
       print('❌ Update Todo Error: $e');
@@ -85,15 +91,10 @@ class TodoService {
 
   static Future<int> deleteTodos(String id) async {
     try {
-      final url = Uri.parse("${baseUrl}delete-todo");
+      final url = Uri.parse("${baseUrl}delete-todo/$id");
       print('📡 DELETE Request to: $url');
-      print('📤 Payload (ID): $id');
 
-      final response = await http.delete(
-        url,
-        headers: {"Content-Type": "application/json"},
-        body: id,
-      );
+      final response = await http.delete(url);
 
       print('📥 Response Status: ${response.statusCode}');
       print('📥 Response Body: ${response.body}');
@@ -101,7 +102,9 @@ class TodoService {
       if (response.statusCode == 200) {
         return response.statusCode;
       } else {
-        throw Exception("Failed to delete todo - Status: ${response.statusCode}, Body: ${response.body}");
+        throw Exception(
+          "Failed to delete todo - Status: ${response.statusCode}, Body: ${response.body}",
+        );
       }
     } catch (e) {
       print('❌ Delete Todo Error: $e');
@@ -109,13 +112,20 @@ class TodoService {
     }
   }
 
-  Future<String> summarizeTodos() async {
+  static Future<String> summarizeTodos() async {
     try {
-      final url = Uri.parse("${baseUrl}ai-summarize");
+      
+      final url = Uri.parse("${baseUrl}ai-summary");
+
+      print('📡 AI SUMMARY Request to: $url');
       final response = await http.get(url);
 
+      print('📥 Response Status: ${response.statusCode}');
+      print('📥 Response Body: ${response.body}');
+
       if (response.statusCode == 200) {
-        return response.body;
+        final data = jsonDecode(response.body);
+        return data['summary'] as String;
       } else {
         throw Exception("Failed to summarize the todos");
       }
@@ -123,4 +133,6 @@ class TodoService {
       throw Exception("Failed to summarize the todos from catch");
     }
   }
+
+
 }

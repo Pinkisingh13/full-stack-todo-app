@@ -6,10 +6,7 @@ class SummaryDialog extends StatelessWidget {
   const SummaryDialog({super.key});
 
   static void show(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => const SummaryDialog(),
-    );
+    showDialog(context: context, builder: (context) => const SummaryDialog());
   }
 
   @override
@@ -39,16 +36,29 @@ class SummaryDialog extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Todo Summary',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.auto_awesome,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'AI Summary',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+
                       IconButton(
                         icon: const Icon(Icons.close, color: Colors.white),
                         onPressed: () => Navigator.pop(context),
@@ -56,48 +66,10 @@ class SummaryDialog extends StatelessWidget {
                     ],
                   ),
                 ),
+            
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildStatCard(
-                        'Total',
-                        todoProvider.totalTodos.toString(),
-                        Icons.list_alt,
-                      ),
-                      Container(
-                        width: 1,
-                        height: 50,
-                        color: Colors.white.withValues(alpha: 0.3),
-                      ),
-                      _buildStatCard(
-                        'Completed',
-                        todoProvider.completedTodos.toString(),
-                        Icons.check_circle,
-                      ),
-                      Container(
-                        width: 1,
-                        height: 50,
-                        color: Colors.white.withValues(alpha: 0.3),
-                      ),
-                      _buildStatCard(
-                        'Pending',
-                        todoProvider.pendingTodos.toString(),
-                        Icons.pending,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  constraints: const BoxConstraints(maxHeight: 400),
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
+             
+                  margin: const EdgeInsets.symmetric(horizontal: 14),
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -107,92 +79,74 @@ class SummaryDialog extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (todoProvider.completedTodosList.isNotEmpty) ...[
-                          Row(
-                            children: [
-                              Icon(Icons.check_circle,
-                                  color: Colors.green[600], size: 20),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Completed Tasks',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green[600],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          ...todoProvider.completedTodosList.map(
-                            (todo) => Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text('• ',
-                                      style: TextStyle(fontSize: 16)),
-                                  Expanded(
-                                    child: Text(
-                                      todo.title,
-                                      style: const TextStyle(fontSize: 14),
-                                    ),
-                                  ),
-                                ],
+                        // AI Summary Section
+                        if (todoProvider.todosummarize != null &&
+                            todoProvider.todosummarize!.isNotEmpty) ...[
+                        
+                         Text(
+                              todoProvider.todosummarize!,
+                              style: TextStyle(
+                                fontSize: 14,
+                                height: 1.6,
+                                color: Colors.grey[800],
                               ),
                             ),
-                          ),
+                          
                           const SizedBox(height: 20),
                         ],
-                        if (todoProvider.pendingTodosList.isNotEmpty) ...[
-                          Row(
-                            children: [
-                              Icon(Icons.pending_actions,
-                                  color: Colors.orange[600], size: 20),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Pending Tasks',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.orange[600],
+
+                        // Loading indicator while fetching summary
+                        if (todoProvider.isLoading) ...[
+                          const Center(
+                            child: Column(
+                              children: [
+                                CircularProgressIndicator(
+                                  color: Color(0xFF8B5CF6),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          ...todoProvider.pendingTodosList.map(
-                            (todo) => Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text('• ',
-                                      style: TextStyle(fontSize: 16)),
-                                  Expanded(
-                                    child: Text(
-                                      todo.title,
-                                      style: const TextStyle(fontSize: 14),
-                                    ),
+                                SizedBox(height: 12),
+                                Text(
+                                  'Generating AI summary...',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
-                        if (todoProvider.totalTodos == 0)
-                          const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(20),
-                              child: Text(
-                                'No todos yet! Start adding some tasks.',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey,
+
+                        // Show empty state if no summary and no loading
+                        if (!todoProvider.isLoading &&
+                            (todoProvider.todosummarize == null ||
+                                todoProvider.todosummarize!.isEmpty)) ...[
+                          if (todoProvider.totalTodos == 0)
+                            const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(20),
+                                child: Text(
+                                  'No todos yet! Start adding some tasks.',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ),
+                            )
+                          else
+                            const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(20),
+                                child: Text(
+                                  'Unable to generate summary. Please try again.',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -206,27 +160,21 @@ class SummaryDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(String label, String value, IconData icon) {
-    return Column(
-      children: [
-        Icon(icon, color: Colors.white, size: 30),
-        const SizedBox(height: 8),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.white,
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _buildStatCard(String label, String value, IconData icon) {
+  //   return Column(
+  //     children: [
+  //       Icon(icon, color: Colors.white, size: 30),
+  //       const SizedBox(height: 8),
+  //       Text(
+  //         value,
+  //         style: const TextStyle(
+  //           fontSize: 24,
+  //           fontWeight: FontWeight.bold,
+  //           color: Colors.white,
+  //         ),
+  //       ),
+  //       Text(label, style: const TextStyle(fontSize: 12, color: Colors.white)),
+  //     ],
+  //   );
+  // }
 }

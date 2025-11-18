@@ -18,7 +18,7 @@ class Todo {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'title': title,
+      'todotitle': title,
       'description': description,
       'isCompleted': isCompleted,
       'createdAt': createdAt.toIso8601String(),
@@ -28,12 +28,12 @@ class Todo {
 
   factory Todo.fromJson(Map<String, dynamic> json) {
     return Todo(
-      id: json['id'],
-      title: json['title'],
-      description: json['description'],
-      isCompleted: json['isCompleted'],
+      id: json['_id'] ?? '',
+      title: json['todotitle'] ?? '',
+      description: json['description'] ?? '',
+      isCompleted: json['isCompleted'] ?? false,
       createdAt: DateTime.parse(json['createdAt']),
-      priority: json['priority'],
+      priority: json['priority'] ?? 'medium',
     );
   }
 }
