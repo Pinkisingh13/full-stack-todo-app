@@ -186,8 +186,15 @@ class _TodoHomePageState extends State<TodoHomePage>
                       SummaryDialog.show(context);
                     }
                   },
-            icon: todoProvider.isLoading ? null : const Icon(Icons.analytics_outlined, size: 24, color: Colors.white,),
-            label:  todoProvider.isLoading ? CircularProgressIndicator(color: Colors.white,) : const Text(
+            icon: todoProvider.isSummarizing ? const SizedBox.shrink() : const Icon(Icons.analytics_outlined, size: 24, color: Colors.white,),
+            label:  todoProvider.isSummarizing ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                color: Colors.white,
+                strokeWidth: 2,
+              ),
+            ) : const Text(
               'View Summary',
               style: TextStyle(
                 fontSize: 16,

@@ -5,6 +5,7 @@ import '../service/todo_service.dart';
 class TodoProvider extends ChangeNotifier {
   List<Todo> _todos = [];
   bool _isLoading = false;
+  bool _isSummarizing = false;
   String? _errorMessage;
 
   String? _summarizeText;
@@ -12,6 +13,7 @@ class TodoProvider extends ChangeNotifier {
   // Getters
   List<Todo> get todos => _todos;
   bool get isLoading => _isLoading;
+  bool get isSummarizing => _isSummarizing;
   String? get errorMessage => _errorMessage;
   String? get todosummarize => _summarizeText;
 
@@ -157,7 +159,7 @@ Future<void> summarize() async {
   try {
     print("Summarize start");
 
-    _isLoading = true;
+    _isSummarizing = true;
     notifyListeners();
 
     final String s = await TodoService.summarizeTodos();
@@ -170,11 +172,11 @@ Future<void> summarize() async {
       print("Summarize todo text is empty");
     }
 
-    _isLoading = false;
+    _isSummarizing = false;
     notifyListeners();
 
   } catch (e) {
-    _isLoading = false;
+    _isSummarizing = false;
     _errorMessage = e.toString();
     notifyListeners();
 

@@ -96,7 +96,7 @@ class SummaryDialog extends StatelessWidget {
                         ],
 
                         // Loading indicator while fetching summary
-                        if (todoProvider.isLoading) ...[
+                        if (todoProvider.isSummarizing) ...[
                           const Center(
                             child: Column(
                               children: [
@@ -117,7 +117,7 @@ class SummaryDialog extends StatelessWidget {
                         ],
 
                         // Show empty state if no summary and no loading
-                        if (!todoProvider.isLoading &&
+                        if (!todoProvider.isSummarizing &&
                             (todoProvider.todosummarize == null ||
                                 todoProvider.todosummarize!.isEmpty)) ...[
                           if (todoProvider.totalTodos == 0)

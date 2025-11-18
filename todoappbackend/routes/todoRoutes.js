@@ -61,7 +61,7 @@ router.delete("/delete-todo/:id", async (req, res) => {
       return res.status(404).send("Todo not found");
     }
 
-    res.ajson({ message: "Todo deleted successfully", deletedTodo });
+    res.json({ message: "Todo deleted successfully", deletedTodo });
 
 
   } catch (error) {
