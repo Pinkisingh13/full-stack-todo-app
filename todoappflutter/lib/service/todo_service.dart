@@ -12,11 +12,18 @@ class TodoService {
     try {
       final url = Uri.parse(baseUrl);
       print('📡 GET Request to: $url');
+      print('📍 Base URL: $baseUrl');
 
       final response = await http.get(url);
 
       print('📥 Response Status: ${response.statusCode}');
-      print('📥 Response Body: ${response.body}');
+      print('📥 Response Headers: ${response.headers}');
+
+      // Only print first 200 chars to avoid printing entire HTML
+      final bodyPreview = response.body.length > 200
+          ? '${response.body.substring(0, 200)}...'
+          : response.body;
+      print('📥 Response Body Preview: $bodyPreview');
 
       if (response.statusCode == 200) {
         final dynamic decodedData = jsonDecode(response.body);
