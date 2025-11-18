@@ -119,7 +119,7 @@ router.get("/ai-summary", async (req, res) => {
     }
 
     let todointext = myTodos.map((t, index) => {
-      return `${index + 1}. ${t.todotitle} | Priority: ${t.priority} | Completed: ${t.isCompleted} | Address: ${t.address}`;
+      return `${index + 1}. ${t.todotitle} | Priority: ${t.priority} | Descroption: ${t.description}  | Completed: ${t.isCompleted}`;
     }).join("\n");
 
     let prompt = `Summarize these todos: ${todointext}, 
@@ -128,7 +128,7 @@ router.get("/ai-summary", async (req, res) => {
 - Completed tasks
 - Not completed tasks
 - Count by priority (high, medium, low)
-- A short 2–3 line suggestion
+- A short 2 line suggestion
  `;
 
 
