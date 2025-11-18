@@ -61,7 +61,7 @@ router.delete("/delete-todo/:id", async (req, res) => {
       return res.status(404).send("Todo not found");
     }
 
-    res.json({ message: "Todo deleted successfully", deletedTodo });
+    res.ajson({ message: "Todo deleted successfully", deletedTodo });
 
 
   } catch (error) {
@@ -154,7 +154,7 @@ router.get("/ai-summary", async (req, res) => {
 
 
 
-    res.statusCode(200).statusMessage("ai successfully summarized the todos.").json({
+    res.status(200).statusMessage("ai successfully summarized the todos.").json({
       summary: aiReply,
     })
 
