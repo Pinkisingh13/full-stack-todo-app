@@ -154,7 +154,7 @@ router.get("/ai-summary", async (req, res) => {
 
 
 
-    res.json({
+    res.statusCode(200).statusMessage("ai successfully summarized the todos.").json({
       summary: aiReply,
     })
 
