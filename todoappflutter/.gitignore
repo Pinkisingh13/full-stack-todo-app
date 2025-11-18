@@ -12,6 +12,8 @@
 .swiftpm/
 migrate_working_dir/
 .env
+LINKEDIN_POST.md
+MEDIUM_ARTICLE.md
 
 # IntelliJ related
 *.iml
